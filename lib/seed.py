@@ -8,6 +8,7 @@ if __name__ == "__main__":
     # Create a SQLite in-memory database
     engine = create_engine('sqlite:///serato.db', echo=True)
 
+
     Base.metadata.drop_all(bind=engine)
 
     # Create the tables in the database
@@ -32,13 +33,15 @@ if __name__ == "__main__":
     session.commit()
 
     # Create joins
-    pt1 = PlayTrack(playlist_id=playlist1.id, track_id=track1.id,)
-    pt2 = PlayTrack(playlist_id=playlist1.id, track_id=track2.id,)
-    pt3 = PlayTrack(playlist_id=playlist1.id, track_id=track3.id,)
-    pt4 = PlayTrack(playlist_id=playlist2.id, track_id=track3.id,)
-    pt5 = PlayTrack(playlist_id=playlist1.id, track_id=track2.id,)
+    pt1 = PlayTrack(playlist_id=playlist1.id, track_id=track1.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
+    pt2 = PlayTrack(playlist_id=playlist1.id, track_id=track2.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
+    pt3 = PlayTrack(playlist_id=playlist1.id, track_id=track3.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
+    pt4 = PlayTrack(playlist_id=playlist2.id, track_id=track3.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
+    pt5 = PlayTrack(playlist_id=playlist1.id, track_id=track2.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
     session.add_all([pt1, pt2, pt3, pt4, pt5,])
     session.commit()
+
+
 
     # Close the session
     session.close()
