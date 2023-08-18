@@ -1,23 +1,23 @@
 import csv
-from pprint import pp
 from ipdb import set_trace
 from os import system
 from helper import Helper
 
 
-def create_setlist():
-    set_list = list()
-    with open("./assets/test_data.csv", newline="") as csvfile:
-        csv_reader = csv.DictReader(csvfile)
-        for x, row in enumerate(csv_reader):
-            # if x > 1:
-                # set_trace()
+class Parser():
+
+    def __init__(self, setlist=None, playlist_data=None) -> None:
+        self.setlist = setlist
+        self.playlist_data = playlist_data
+
+    def create_setlist(self, data_path):
+        setlist = list()
+        with open(data_path, newline="") as csvfile:
+            csv_reader = csv.DictReader(csvfile)
+            for x, row in enumerate(csv_reader):
                 row.pop("notes")
                 row.pop("deck")
-                set_list.append(row)
-    pp(set_list[:6])
-    return set_list
-
-
-Helper.top_wrap("Start")
-create_setlist()
+                setlist.append(row)
+        self.playlist_data = setlist[0]
+        self.setlist = setlist[1:]
+        return setlist

@@ -1,13 +1,14 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from models import Base, Playlist, Track, PlayTrack
+from pprint import pp
 from ipdb import set_trace
 from helper import Helper
 
 
 if __name__ == "__main__":
-    engine = create_engine('sqlite:///serato.db', echo=True)
-    
+    engine = create_engine('sqlite:///db/serato.db', echo=True)
+
     Session = sessionmaker(bind=engine)
     session = Session()
 

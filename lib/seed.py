@@ -1,13 +1,20 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from models import Base, Playlist, Track, PlayTrack
+from helper import Helper
+from parser import Parser
+from pprint import pp
 from ipdb import set_trace
+
 
 if __name__ == "__main__":
 
-    # Create a SQLite in-memory database
-    engine = create_engine('sqlite:///serato.db', echo=True)
+    Helper.top_wrap("SEEDING")
+    test_setlist = Parser()
+    test_setlist.create_setlist("./assets/test_data.csv")
 
+    # Create a SQLite in-memory database
+    engine = create_engine('sqlite:///db/serato.db', echo=True)
 
     Base.metadata.drop_all(bind=engine)
 
@@ -18,31 +25,31 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    
-    # Create playlists
-    playlist1 = Playlist(name="My Favorites")
-    playlist2 = Playlist(name="Party Mix")
-
-    # Create tracks
-    track1 = Track(title="Song 1")
-    track2 = Track(title="Song 2")
-    track3 = Track(title="Song 3")
-
-    # Add playlists and tracks to the session
-    session.add_all([playlist1, playlist2, track1, track2, track3])
+    Helper.center_string_stars("Creating Test Playlist...")
+    p1 = Playlist(name=test_setlist.playlist_data["name"])
+    p2 = Playlist(name="Test Gym Playlist")
+    session.add_all([p1, p2])
     session.commit()
 
-    # Create joins
-    pt1 = PlayTrack(playlist_id=playlist1.id, track_id=track1.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
-    pt2 = PlayTrack(playlist_id=playlist1.id, track_id=track2.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
-    pt3 = PlayTrack(playlist_id=playlist1.id, track_id=track3.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
-    pt4 = PlayTrack(playlist_id=playlist2.id, track_id=track3.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
-    pt5 = PlayTrack(playlist_id=playlist1.id, track_id=track2.id, start_time="6:57:21 AM PDT", end_time="7:04:23 AM PDT",playtime="00:07:02")
-    session.add_all([pt1, pt2, pt3, pt4, pt5,])
-    session.commit()
+    def create_track_data(setlist, playlist):
+        for track in setlist:
+            # tr = Track(title=track["name"])
+            tr = Helper.find_or_create(session, Track, title=track["name"])
+            session.add(tr)
+            session.commit()
+            pt = PlayTrack(track=tr, playlist=playlist,
+                           start_time=track["start time"], end_time=track["end time"], playtime=track["playtime"])
+            session.add(pt)
+            session.commit()
 
+    Helper.center_string_stars("Creating Tracks from csv...")
+    create_track_data(test_setlist.setlist, p2)
 
+    Helper.center_string_stars("Creating second playlist from csv...")
+    create_track_data(test_setlist.setlist[:20], p1)
 
     # Close the session
     session.close()
-    print("\nDON!\n")
+    Helper.center_string_stars("DON!")
+    # Helper.center_string_stars(f'Created {len(test_setlist.setlist)}')
+    # Helper.center_string_stars(f'Created {len(session.query(Track).all())}')
