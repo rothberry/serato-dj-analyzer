@@ -2,7 +2,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from models import Base, Playlist, Track, PlayTrack
 from helper import Helper
-from parser import Parser
+from parser import CSVParser
 from pprint import pp
 from ipdb import set_trace
 
@@ -10,7 +10,7 @@ from ipdb import set_trace
 if __name__ == "__main__":
 
     Helper.top_wrap("SEEDING")
-    test_setlist = Parser()
+    test_setlist = CSVParser()
     test_setlist.create_setlist("./assets/test_data.csv")
 
     # Create a SQLite in-memory database
@@ -31,25 +31,14 @@ if __name__ == "__main__":
     session.add_all([p1, p2])
     session.commit()
 
-    def create_track_data(setlist, playlist):
-        for track in setlist:
-            # tr = Track(title=track["name"])
-            tr = Helper.find_or_create(session, Track, title=track["name"])
-            session.add(tr)
-            session.commit()
-            pt = PlayTrack(track=tr, playlist=playlist,
-                           start_time=track["start time"], end_time=track["end time"], playtime=track["playtime"])
-            session.add(pt)
-            session.commit()
-
     Helper.center_string_stars("Creating Tracks from csv...")
-    create_track_data(test_setlist.setlist, p2)
+    for track in test_setlist.setlist:
+        Track.create_track_data(session, track, p2)
 
     Helper.center_string_stars("Creating second playlist from csv...")
-    create_track_data(test_setlist.setlist[:20], p1)
+    for track in test_setlist.setlist[:20]:
+        Track.create_track_data(session, track, p1)
 
     # Close the session
     session.close()
     Helper.center_string_stars("DON!")
-    # Helper.center_string_stars(f'Created {len(test_setlist.setlist)}')
-    # Helper.center_string_stars(f'Created {len(session.query(Track).all())}')

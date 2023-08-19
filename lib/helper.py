@@ -26,7 +26,7 @@ class Helper():
         print(f"{half_stars} {string} {half_stars}")
 
     @classmethod
-    def find_or_create(session, model, **kwargs):
+    def find_or_create(cls, session, model, **kwargs):
         found_model = session.query(model).filter_by(**kwargs).one_or_none()
         if not found_model:
             return model(**kwargs)
