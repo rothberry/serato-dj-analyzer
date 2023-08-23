@@ -30,5 +30,4 @@ class Helper():
         found_model = session.query(model).filter_by(**kwargs).one_or_none()
         if not found_model:
             return model(**kwargs)
-        Helper.star_line()
         return found_model

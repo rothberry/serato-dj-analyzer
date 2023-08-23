@@ -23,7 +23,7 @@ if __name__ == "__main__":
     txt_setlist2.create_setlist("sets/12-29-2019.txt")
 
     # Create a SQLite in-memory database
-    engine = create_engine('sqlite:///db/serato.db', echo=True)
+    engine = create_engine('sqlite:///db/serato.db', echo=False, hide_parameters=True)
 
     Helper.center_string_stars("Dropping..")
     Base.metadata.drop_all(bind=engine)
