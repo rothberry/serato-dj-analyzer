@@ -8,7 +8,7 @@ from helper import Helper
 Base = declarative_base()
 
 # TODO may add genre/artist/deck to either PlayTrack/Track or new models
-
+# TODO Turn to Flask/Django for a potential GUI to drag/drop csv/txt files and other UI shit
 
 class PlayTrack(Base):
     __tablename__ = 'play_tracks'
@@ -32,6 +32,7 @@ class Playlist(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    # TODO Add all the total playlist metadata here?
 
     # Define the relationship to the Track model
     tracks = relationship(
