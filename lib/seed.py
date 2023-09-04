@@ -1,14 +1,13 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from models import Base, Playlist, Track
+from app import app
+from models import db, Base, Playlist, Track
 from helper import Helper
 from parser import CSVParser, TxtParser
 from pprint import pp
 from ipdb import set_trace
 
-
-if __name__ == "__main__":
-
+with app.app_context():
     Helper.top_wrap("SEEDING", "+")
     csv_setlist = CSVParser(playlist_name="CSV Test")
     csv_setlist.create_setlist("./assets/test_data.csv")
@@ -22,25 +21,18 @@ if __name__ == "__main__":
     txt_setlist2 = TxtParser()
     txt_setlist2.create_setlist("sets/12-29-2019.txt")
 
-    # Create a SQLite in-memory database
-    engine = create_engine('sqlite:///db/serato.db', echo=False, hide_parameters=True)
-
     Helper.center_string_stars("Dropping..")
-    Base.metadata.drop_all(bind=engine)
+    db.drop_all()
 
     Helper.center_string_stars("Creating Tables..")
-    Base.metadata.create_all(engine)
-
-    # Create a session to interact with the database
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    db.create_all()
 
     def create_sets(setlist):
         pl = Playlist(name=setlist.playlist_name)
-        session.add(pl)
-        session.commit()
+        db.session.add(pl)
+        db.session.commit()
         for track in setlist.setlist:
-            Track.create_track_data(session, track, pl)
+            Track.create_track_data(db.session, track, pl)
 
     Helper.center_string_stars("Creating Tracks from csv...")
     create_sets(csv_setlist)
@@ -54,5 +46,5 @@ if __name__ == "__main__":
     create_sets(txt_setlist2)
 
     # Close the session
-    session.close()
+    db.session.close()
     Helper.center_string_stars("DON!")

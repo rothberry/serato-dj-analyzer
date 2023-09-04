@@ -6,3 +6,6 @@ seed:
 
 debug:
 	python lib/debug.py
+
+flask:
+	python lib/app.py
