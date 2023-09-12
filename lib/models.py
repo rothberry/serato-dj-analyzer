@@ -30,28 +30,6 @@ class PlayTrack(Base):
         return f"playid: {self.playlist_id} / trackid: {self.track_id}"
 
 
-class Playlist(Base):
-    __tablename__ = 'playlists'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-
-    # Define the relationship to the Track model
-    tracks = db.relationship(
-        "Track", secondary=PlayTrack.__table__, back_populates="playlists")
-    play_tracks = db.relationship("PlayTrack", backref=db.backref("playlist"))
-
-    # TODO Add all the total playlist metadata here?
-
-    def to_dict(self):
-        dct = self.__dict__
-        dct.pop("_sa_instance_state")
-        return dct
-
-    def __repr__(self):
-        return f"Name: {self.name}"
-
-
 class Track(Base):
     __tablename__ = 'tracks'
 
@@ -80,3 +58,33 @@ class Track(Base):
 
     def __repr__(self):
         return f"Name: {self.title}"
+
+
+class Playlist(Base):
+    __tablename__ = 'playlists'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+
+    # Define the relationship to the Track model
+    tracks = db.relationship(
+        "Track", secondary=PlayTrack.__table__, back_populates="playlists")
+    play_tracks = db.relationship("PlayTrack", backref=db.backref("playlist"))
+
+    # TODO Add all the total playlist metadata here?
+
+    def to_dict(self):
+        dct = self.__dict__
+        dct.pop("_sa_instance_state")
+        return dct
+
+    def __repr__(self):
+        return f"Name: {self.name}"
+
+    @classmethod
+    def create_sets(cls, setlist):
+        pl = Playlist(name=setlist.playlist_name)
+        db.session.add(pl)
+        db.session.commit()
+        for track in setlist.setlist:
+            Track.create_track_data(db.session, track, pl)

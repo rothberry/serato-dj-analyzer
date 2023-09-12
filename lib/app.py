@@ -6,11 +6,14 @@ from models import db, Playlist, PlayTrack, Track
 from ipdb import set_trace
 from parser import CSVParser, TxtParser
 from helper import Helper
+import os
+from pprint import pp
 
 app = Flask(__name__)
 # Replace with your database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///serato.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["TEMP_FOLDER"] = './temp'
 app.json.compact = False
 CORS(app)
 migrate = Migrate(app, db)
@@ -24,16 +27,23 @@ def upload_setlist():
     # first detect if .txt or csv
     uploaded_file = request.files["file"]
     content_type = uploaded_file.content_type.split("/")[1]
+    temp_path = os.path.join(app.config["TEMP_FOLDER"], uploaded_file.filename)
+    uploaded_file.save(temp_path)
+
     if content_type == "csv":
         Helper.center_string_stars("CSV UPLOADER", "+")
+        newCSVParser = CSVParser()
+        newCSVParser.create_setlist(temp_path)
         set_trace()
     elif content_type == "plain":
         Helper.center_string_stars("TXT UPLOADER")
+        newTxtParser = TxtParser()
+        newTxtParser.create_setlist(temp_path)
         set_trace()
     else:
         Helper.center_string_stars("BAD UPLOADER", "?")
         return make_response({"error": "Bad"}, 422)
-    set_trace()
+    # set_trace()
     return make_response({"message": "Succes"})
 
 # TRACKS REST
@@ -67,5 +77,5 @@ def base():
 
 if __name__ == "__main__":
     port = 5555
-    Helper.center_string_stars(f"Server Running on {port}")
+    Helper.top_wrap(f"Server Running on {port}")
     app.run(port=port, debug=True)

@@ -9,3 +9,6 @@ debug:
 
 flask:
 	python lib/app.py
+
+env:
+	export FLASK_APP=lib/app.py
