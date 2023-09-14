@@ -31,3 +31,7 @@ class Helper():
         if not found_model:
             return model(**kwargs)
         return found_model
+    
+    # @classmethod
+    # def really_drop_all_tables(_, db, models):
+        

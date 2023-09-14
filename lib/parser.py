@@ -10,11 +10,12 @@ class CSVParser():
         self.setlist = setlist
         self.playlist_data = playlist_data
         self.playlist_name = playlist_name
-        self.source = ""
+        # ? Prob don't really need source 🤷‍♀️
+        # self.source = ""
 
     def create_setlist(self, data_path):
         setlist = list()
-        self.source = data_path
+        # self.source = data_path
         with open(data_path, newline="") as csvfile:
             csv_reader = csv.DictReader(csvfile)
             for x, row in enumerate(csv_reader):
@@ -32,11 +33,11 @@ class TxtParser():
         self.setlist = setlist
         self.playlist_data = playlist_data
         self.playlist_name = playlist_name
-        self.source = ""
+        # self.source = ""
 
     def create_setlist(self, data_path):
         setlist = list()
-        self.source = data_path
+        # self.source = data_path
         with open(data_path) as txtfile:
             txt_reader = txtfile.read()
             txt_split = txt_reader.split("\n")

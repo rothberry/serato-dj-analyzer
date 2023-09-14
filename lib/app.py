@@ -8,10 +8,11 @@ from parser import CSVParser, TxtParser
 from helper import Helper
 import os
 from pprint import pp
+from time import strftime
 
 app = Flask(__name__)
 # Replace with your database URI
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///serato.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sera2.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["TEMP_FOLDER"] = './temp'
 app.json.compact = False
@@ -24,35 +25,48 @@ db.init_app(app)
 
 @app.route("/upload", methods=["POST"])
 def upload_setlist():
-    # first detect if .txt or csv
+    # save file to temp (with timestamp)
+    # detect if .txt or csv
+    # create correct parser
+    # create_setlist
+    # delete temp file? Or chron job to delete?
     uploaded_file = request.files["file"]
+    playlist_name = request.form["playlist_name"]
     content_type = uploaded_file.content_type.split("/")[1]
-    temp_path = os.path.join(app.config["TEMP_FOLDER"], uploaded_file.filename)
+    timestr = strftime("%Y%m%d-%H%M%S")
+    temp_path = os.path.join(
+        app.config["TEMP_FOLDER"], f"{timestr}-{uploaded_file.filename}")
     uploaded_file.save(temp_path)
 
-    if content_type == "csv":
-        Helper.center_string_stars("CSV UPLOADER", "+")
-        newCSVParser = CSVParser()
-        newCSVParser.create_setlist(temp_path)
-        set_trace()
-    elif content_type == "plain":
-        Helper.center_string_stars("TXT UPLOADER")
-        newTxtParser = TxtParser()
-        newTxtParser.create_setlist(temp_path)
-        set_trace()
+    if content_type in ["csv", "plain"]:
+        Helper.center_string_stars(
+            "CSV" if content_type == "csv" else "TXT", "+" if content_type == "csv" else "-")
+        newParser = CSVParser(playlist_name=playlist_name) if content_type == "csv" else TxtParser(
+            playlist_name=playlist_name)
+        newParser.create_setlist(temp_path)
+        Playlist.create_sets(newParser)
     else:
         Helper.center_string_stars("BAD UPLOADER", "?")
         return make_response({"error": "Bad"}, 422)
-    # set_trace()
     return make_response({"message": "Succes"})
 
-# TRACKS REST
+# PLAYLIST REST
 
+
+@app.route("/playlists", methods=["GET"])
+def index_playlist():
+    Helper.center_string_stars("PLAYLIST INDEX")
+    all_pl = [playlist.to_dict() for playlist in Playlist.query.all()]
+    set_trace()
+    return make_response(all_pl)
+
+
+# TRACKS REST
 
 @app.route("/tracks", methods=["GET", "POST"])
 def index_create():
     if request.method == "GET":
-        Helper.center_string_stars("INDEX")
+        Helper.center_string_stars("TRACKS INDEX")
         all_tracks = [track.to_dict() for track in Track.query.all()]
         return make_response(all_tracks)
     elif request.method == "POST":

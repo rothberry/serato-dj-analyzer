@@ -73,9 +73,11 @@ class Playlist(Base):
 
     # TODO Add all the total playlist metadata here?
 
-    def to_dict(self):
+    def to_dict(self, rel=False):
         dct = self.__dict__
         dct.pop("_sa_instance_state")
+        if rel:
+            dct["tracks"] = [tr.to_dict() for tr in self.tracks]
         return dct
 
     def __repr__(self):

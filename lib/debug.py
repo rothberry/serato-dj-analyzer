@@ -1,5 +1,3 @@
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 from app import app
 from models import db, Base, Playlist, Track, PlayTrack
 from pprint import pp
