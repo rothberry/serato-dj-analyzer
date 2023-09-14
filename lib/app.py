@@ -12,7 +12,10 @@ from time import strftime
 
 app = Flask(__name__)
 # Replace with your database URI
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sera2.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sera2.db'
+basedir = os.path.abspath(os.path.dirname(__file__))
+path_to = os.path.join(basedir, 'instance', 'serato.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + path_to
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["TEMP_FOLDER"] = './temp'
 app.json.compact = False
@@ -57,7 +60,6 @@ def upload_setlist():
 def index_playlist():
     Helper.center_string_stars("PLAYLIST INDEX")
     all_pl = [playlist.to_dict() for playlist in Playlist.query.all()]
-    set_trace()
     return make_response(all_pl)
 
 
