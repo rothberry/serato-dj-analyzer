@@ -51,6 +51,13 @@ class Track(Base):
         session.add(pt)
         session.commit()
 
+    # ? Calculating instance methods?
+    def times_played(self):
+        return len(self.play_tracks)
+
+    def average_length_played(self):
+        pass
+
     def to_dict(self):
         dct = self.__dict__
         dct.pop("_sa_instance_state")
@@ -74,10 +81,11 @@ class Playlist(Base):
     # TODO Add all the total playlist metadata here?
 
     def to_dict(self, rel=False):
+        tracks = [tr.to_dict() for tr in self.tracks]
         dct = self.__dict__
         dct.pop("_sa_instance_state")
         if rel:
-            dct["tracks"] = [tr.to_dict() for tr in self.tracks]
+            dct["tracks"] = tracks
         return dct
 
     def __repr__(self):
