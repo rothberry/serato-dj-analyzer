@@ -31,7 +31,14 @@ class Helper():
         if not found_model:
             return model(**kwargs)
         return found_model
-    
-    # @classmethod
-    # def really_drop_all_tables(_, db, models):
-        
+
+    @classmethod
+    def convert_ts_to_seconds(cls, time_str):
+        hours, minutes, seconds = time_str.split(":")
+        total = int(seconds) + int(minutes) * 60 + int(hours) * 3600
+        return total
+
+    @classmethod
+    def convert_seconds_to_ts(cls, seconds):
+        from datetime import timedelta
+        return str(timedelta(seconds=seconds))

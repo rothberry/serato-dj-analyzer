@@ -59,7 +59,7 @@ def upload_setlist():
 @app.route("/playlists", methods=["GET"])
 def index_playlist():
     Helper.center_string_stars("PLAYLIST INDEX")
-    all_pl = [playlist.to_dict() for playlist in Playlist.query.all()]
+    all_pl = [playlist.to_dict(True) for playlist in Playlist.query.all()]
     return make_response(all_pl)
 
 

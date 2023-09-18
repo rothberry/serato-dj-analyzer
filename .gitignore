@@ -1,2 +1,4 @@
 .env
 .venv
+/temp
+/lib/instance/serato.db
