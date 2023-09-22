@@ -14,7 +14,11 @@ app = Flask(__name__)
 # Replace with your database URI
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sera2.db'
 basedir = os.path.abspath(os.path.dirname(__file__))
+# basedir = os.path.abspath(os.getcwd())
 path_to = os.path.join(basedir, 'instance', 'serato.db')
+Helper.star_line()
+print('sqlite:///' + path_to)
+Helper.star_line()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + path_to
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["TEMP_FOLDER"] = './temp'

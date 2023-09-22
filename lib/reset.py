@@ -1,5 +1,5 @@
 from app import app
-from models import db, Playlist, PlayTrack, Track
+from models import db, Playlist, PlayTrack, Track, Artist, ArtistTrack, Genre
 from helper import Helper
 from os import system
 
@@ -11,8 +11,9 @@ with app.app_context():
 
     Helper.center_string_stars("Dropping..")
     # system("rm -f ./instance/*")
-    for mod in (PlayTrack, Playlist, Track):
-        mod.query.delete()
+    # for mod in (PlayTrack, Playlist, Track, Artist, ArtistTrack, Genre):
+    #     mod.query.delete()
+    db.drop_all()
 
     Helper.center_string_stars("Creating Tables..")
     db.create_all()
