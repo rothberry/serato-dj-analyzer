@@ -54,6 +54,7 @@ class Helper():
     @classmethod
     def test_kwargs(cls, first, **kwargs):
         return kwargs
+    
     @classmethod
     def convert_ts_to_seconds(cls, time_str):
         hours, minutes, seconds = time_str.split(":")

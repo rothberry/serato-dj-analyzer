@@ -112,6 +112,7 @@ class Playlist(Base):
             Track.create_track_data(db.session, track, pl)
 
 
+# TODO currently just for documenting, will need to find a way to normalize all artists given wildly different names
 class Artist(db.Model):
     __tablename__ = 'artists'
     id = db.Column(db.Integer, primary_key=True)
@@ -123,7 +124,7 @@ class Artist(db.Model):
 
     def __repr__(self): return f'''id: {self.id} / name: {self.name}'''
 
-
+# TODO also currently just for doc
 class Genre(db.Model):
     __tablename__ = 'genres'
     id = db.Column(db.Integer, primary_key=True)
