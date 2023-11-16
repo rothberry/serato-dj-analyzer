@@ -1,7 +1,7 @@
 from os import get_terminal_size, system
 
 
-class Helper():
+class TermHelper():
     term_size = get_terminal_size().columns
 
     @classmethod
@@ -25,6 +25,9 @@ class Helper():
         half_stars = char * int(half_size)
         print(f"{half_stars} {string} {half_stars}")
 
+
+class FlaskHelper():
+
     @classmethod
     def find_or_create(cls, session, model, **kwargs):
         found_model = session.query(model).filter_by(**kwargs).one_or_none()
@@ -43,7 +46,7 @@ class Helper():
 
     @classmethod
     def create_track_data(cls, session, track, playlist):
-        tr = Helper.find_or_create(session, cls, title=track["name"])
+        tr = FlaskHelper.find_or_create(session, cls, title=track["name"])
         session.add(tr)
         session.commit()
         pt = PlayTrack(track=tr, playlist=playlist,
@@ -54,7 +57,10 @@ class Helper():
     @classmethod
     def test_kwargs(cls, first, **kwargs):
         return kwargs
-    
+
+
+class MiscHelper():
+
     @classmethod
     def convert_ts_to_seconds(cls, time_str):
         hours, minutes, seconds = time_str.split(":")

@@ -1,7 +1,6 @@
 import csv
 from ipdb import set_trace
 from pprint import pp
-from helper import Helper
 
 
 class CSVParser():

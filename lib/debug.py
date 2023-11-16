@@ -2,7 +2,7 @@ from app import app
 from models import db, Base, Playlist, Track, PlayTrack
 from pprint import pp
 from ipdb import set_trace
-from helper import Helper
+from helper import TermHelper
 
 
 with app.app_context():
@@ -10,8 +10,7 @@ with app.app_context():
     tracks = Track.query.all()
     play_tracks = PlayTrack.query.all()
     # pt1, tr1, pl1 = [play_tracks[0], tracks[0], playlists[0]]
-    Helper.top_wrap("DEBUG MODE")
-    # Helper.test_kwargs("fi", playlist=Playlist, track=Track)
+    TermHelper.top_wrap("DEBUG MODE")
     set_trace()
 
-    Helper.center_string_stars("DONE")
+    TermHelper.center_string_stars("DONE")

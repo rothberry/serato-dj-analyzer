@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from helper import Helper
+from helper import FlaskHelper
+from ipdb import set_trace
 
 db = SQLAlchemy()
 # Define a base class for declarative models
@@ -54,14 +55,19 @@ class Track(Base):
     genre = db.relationship("Genre", backref=db.backref("tracks"))
 
     @classmethod
-    def create_track_data(cls, session, track, playlist):
-        tr = Helper.find_or_create(session, cls, title=track["name"])
-        session.add(tr)
-        session.commit()
-        pt = PlayTrack(track=tr, playlist=playlist,
-                       start_time=track["start time"], end_time=track["end time"], playtime=track["playtime"])
-        session.add(pt)
-        session.commit()
+    def create_track_data(cls, meta_data, playlist):
+        tr = FlaskHelper.find_or_create(db.session, cls, title=meta_data["name"])
+        tr.bpm = meta_data["bpm"]
+        tr.key = meta_data["key"]
+        # TODO Will need to split artists (i.e. Wax Motif & BRKLYN) maybe already have artists in the db, and use this to check if they are there?
+        artist = Artist(name=meta_data["artist"])
+        artist.tracks.append(tr)
+        db.session.add(tr)
+        db.session.commit()
+        pt = PlayTrack(track=tr, playlist=playlist, playtime=meta_data["playtime"])
+        db.session.add(pt)
+        db.session.commit()
+        set_trace()
 
     # ? Calculating instance methods?
     def times_played(self):
@@ -108,8 +114,9 @@ class Playlist(Base):
         pl = Playlist(name=setlist.playlist_name)
         db.session.add(pl)
         db.session.commit()
-        for track in setlist.setlist:
-            Track.create_track_data(db.session, track, pl)
+        for meta_data in setlist.setlist:
+            Track.create_track_data(meta_data, pl)
+            # Track.create_track_data(db.session, meta_data, pl)
 
 
 # TODO currently just for documenting, will need to find a way to normalize all artists given wildly different names
@@ -125,6 +132,8 @@ class Artist(db.Model):
     def __repr__(self): return f'''id: {self.id} / name: {self.name}'''
 
 # TODO also currently just for doc
+
+
 class Genre(db.Model):
     __tablename__ = 'genres'
     id = db.Column(db.Integer, primary_key=True)

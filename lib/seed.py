@@ -2,23 +2,23 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from app import app
 from models import db, Base, Playlist, Track, Artist, Genre
-from helper import Helper
+from helper import TermHelper
 from parser import CSVParser, TxtParser
 from pprint import pp
 from ipdb import set_trace
 
 with app.app_context():
-    Helper.top_wrap("SEEDING", "+")
+    TermHelper.top_wrap("SEEDING", "+")
 
-    Helper.center_string_stars("Dropping..")
+    TermHelper.center_string_stars("Dropping..")
     db.drop_all()
 
-    Helper.center_string_stars("Creating Tables..")
+    TermHelper.center_string_stars("Creating Tables..")
     db.create_all()
 
-    Helper.center_string_stars("Creating Test Playlist...")
-    Helper.center_string_stars("Creating Test Genres...")
-    Helper.center_string_stars("Creating Test ...")
+    TermHelper.center_string_stars("Creating Test Playlist...")
+    TermHelper.center_string_stars("Creating Test Genres...")
+    TermHelper.center_string_stars("Creating Test ...")
     a1 = Artist(name="Phil")
     g1 = Genre(name="Trap")
     t1 = Track(title="Cool Song", bpm=125, key="Gm")
@@ -37,4 +37,4 @@ with app.app_context():
 
     # Close the session
     db.session.close()
-    Helper.center_string_stars("DON!")
+    TermHelper.center_string_stars("DON!")
