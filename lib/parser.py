@@ -68,7 +68,7 @@ class TxtParser():
                 meta_data = ""
             # ? Could not append to self.p_d because then it makes it a class variable?
             p_data.append(
-                {"name": column_name, "idx": starting_idx,  "meta": meta_data})
+                {"name": self.create_slug(column_name), "idx": starting_idx,  "meta": meta_data})
         self.playlist_data = p_data
 
     def split_row_txt(self, row_txt):
@@ -83,9 +83,10 @@ class TxtParser():
             row_dict[name] = val
         return row_dict
 
-    def print_columns(self):
+    @property
+    def columns(self):
         col_names = [clm["name"] for clm in self.playlist_data]
-        print(f"{col_names}")
+        return col_names
 
     def print_setlist(self, tup):
         for tr in self.setlist:
