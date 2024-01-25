@@ -5,11 +5,13 @@ from flask_cors import CORS
 from models import db, Playlist, PlayTrack, Track
 from ipdb import set_trace
 from parser import CSVParser, TxtParser
-from helper import TermHelper
+from py_term_helpers import TermHelper
 import os
 from pprint import pp
 from time import strftime
 
+
+# TODO move from sqlite to postgres 
 app = Flask(__name__)
 # Replace with your database URI
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sera2.db'

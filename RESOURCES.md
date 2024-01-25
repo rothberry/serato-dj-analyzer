@@ -30,5 +30,8 @@ PlayTrack:
 Artist: (currently just for doc)
 - name
 
+artist_track:
+- join of track/artist
+
 Genre
 - name

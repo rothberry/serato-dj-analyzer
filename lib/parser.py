@@ -6,8 +6,8 @@ from pprint import pp
 class CSVParser():
 
     def __init__(self, setlist=None, playlist_data=None, playlist_name=None) -> None:
-        self.setlist = setlist
-        self.playlist_data = playlist_data
+        self.setlist = setlist # list of track dicts
+        self.playlist_data = playlist_data # TODO change to meta_data
         self.playlist_name = playlist_name
         # ? Prob don't really need source 🤷‍♀️
         # self.source = ""
@@ -30,7 +30,7 @@ class TxtParser():
 
     def __init__(self, setlist=None, playlist_name=None, playlist_data=[]):
         self.setlist = setlist
-        self.playlist_data = playlist_data
+        self.playlist_data = playlist_data # TODO change to meta_data
         self.playlist_name = playlist_name
         # self.source = ""
 

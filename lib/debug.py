@@ -2,7 +2,7 @@ from app import app
 from models import db, Base, Playlist, Track, PlayTrack
 from pprint import pp
 from ipdb import set_trace
-from helper import TermHelper
+from py_term_helpers import TermHelper
 
 
 with app.app_context():

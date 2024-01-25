@@ -1,6 +1,6 @@
 from app import app
 from models import db, Playlist, PlayTrack, Track, Artist, ArtistTrack, Genre
-from helper import TermHelper
+from py_term_helpers import TermHelper
 from os import system
 
 with app.app_context():

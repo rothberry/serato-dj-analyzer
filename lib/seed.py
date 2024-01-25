@@ -2,7 +2,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from app import app
 from models import db, Base, Playlist, Track, Artist, Genre
-from helper import TermHelper
+from py_term_helpers import TermHelper
 from parser import CSVParser, TxtParser
 from pprint import pp
 from ipdb import set_trace
