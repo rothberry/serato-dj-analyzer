@@ -14,7 +14,7 @@ flask:
 	python lib/app.py
 
 env:
-	export FLASK_APP=lib/app.py
+	export FLASK_APP=app.py
 	
 upgrade:
 	flask --app=lib/app.py db upgrade

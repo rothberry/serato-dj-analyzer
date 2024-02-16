@@ -1,36 +1,22 @@
-from flask import Flask, make_response, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_cors import CORS
-from models import db, Playlist, PlayTrack, Track
+from flask import current_app, Blueprint, render_template, make_response, request
+from lib.models import db, Playlist, PlayTrack, Track
 from ipdb import set_trace
-from parser import CSVParser, TxtParser
+from lib.parser import CSVParser, TxtParser
 from py_term_helpers import star_line, center_string_stars, top_wrap
 import os
 from pprint import pp
 from time import strftime
 
-app = Flask(__name__)
-# Replace with your database URI
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sera2.db'
-basedir = os.path.abspath(os.path.dirname(__file__))
-# basedir = os.path.abspath(os.getcwd())
-path_to = os.path.join(basedir, 'instance', 'serato.db')
-star_line()
-print('sqlite:///' + path_to)
-star_line()
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + path_to
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config["TEMP_FOLDER"] = './temp'
-app.json.compact = False
-CORS(app)
-migrate = Migrate(app, db)
-db.init_app(app)
 
-# MAIN UPLOAD
+flask_app = Blueprint('flask_app', __name__)
 
 
-@app.route("/upload", methods=["POST"])
+@flask_app.route('/')
+def index():
+    return "HELLLLLLLO WORLD"
+
+
+@flask_app.route("/upload", methods=["POST"])
 def upload_setlist():
     # save file to temp (with timestamp)
     # detect if .txt or csv
@@ -60,7 +46,7 @@ def upload_setlist():
 # PLAYLIST REST
 
 
-@app.route("/playlists", methods=["GET"])
+@flask_app.route("/playlists", methods=["GET"])
 def index_playlist():
     center_string_stars("PLAYLIST INDEX")
     all_pl = [playlist.to_dict(True) for playlist in Playlist.query.all()]
@@ -69,7 +55,7 @@ def index_playlist():
 
 # TRACKS REST
 
-@app.route("/tracks", methods=["GET", "POST"])
+@flask_app.route("/tracks", methods=["GET", "POST"])
 def index_create():
     if request.method == "GET":
         center_string_stars("TRACKS INDEX")
@@ -79,7 +65,7 @@ def index_create():
         center_string_stars("CREATE")
 
 
-@app.route("/tracks/<int:track_id>", methods=["GET"])
+@flask_app.route("/tracks/<int:track_id>", methods=["GET"])
 def show(track_id):
     track = Track.query.filter_by(id=track_id).first()
     if track:
@@ -88,14 +74,3 @@ def show(track_id):
             return make_response(track.to_dict())
     else:
         return make_response({"error": f'Track of id: {track_id} not found'}, 404)
-
-
-@app.route("/")
-def base():
-    return "Hi"
-
-
-if __name__ == "__main__":
-    port = 5555
-    top_wrap(f"Server Running on {port}")
-    app.run(port=port, debug=True)

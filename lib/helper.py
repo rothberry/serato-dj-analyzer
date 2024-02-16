@@ -7,6 +7,8 @@ class FlaskHelper():
             return model(**kwargs)
         return found_model
 
+    # Moved to Playlist Model
+
     @classmethod
     def create_sets(cls, setlist):
         from models import db, Playlist, Track, Artist
@@ -16,6 +18,7 @@ class FlaskHelper():
         for track in setlist.setlist:
             Track.create_track_data(db.session, track, pl)
 
+    # Moved to Track Model
     @classmethod
     def create_track_data(cls, session, track, playlist):
         tr = FlaskHelper.find_or_create(session, cls, title=track["name"])

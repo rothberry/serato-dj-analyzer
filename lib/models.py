@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from helper import FlaskHelper
+from lib.helper import FlaskHelper
 from ipdb import set_trace
 
 db = SQLAlchemy()
