@@ -11,6 +11,7 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-cors = "*"
 pytest = "*"
+py-term-helpers = "*"
 
 [dev-packages]
 
