@@ -37,8 +37,8 @@ def create_app(test_config=None):
     migrate = Migrate(app, db)
     db.init_app(app)
 
-    from lib.routes import hello
-    app.register_blueprint(hello)
+    from lib.routes import flask_app
+    app.register_blueprint(flask_app)
 
     return app
 
