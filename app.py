@@ -2,7 +2,7 @@ from flask import Flask, make_response, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-from lib.models import db, Playlist, PlayTrack, Track
+from lib.models import db
 from ipdb import set_trace
 from lib.parser import CSVParser, TxtParser
 from py_term_helpers import star_line, center_string_stars, top_wrap
@@ -23,6 +23,7 @@ from time import strftime
 
 # MAIN UPLOAD
 def create_app(test_config=None):
+    center_string_stars("Creating app..")
     app = Flask(__name__)
     app.config.from_mapping(SECRET_KEY='dev')
 
