@@ -51,7 +51,10 @@ class Track(Base):
 
     genre = db.relationship("Genre", backref="tracks")
 
+    play_tracks = db.relationship("PlayTrack", backref="track")
+
     # ? Calculating instance methods?
+
     def times_played(self):
         return
         # return len(self.play_tracks)
@@ -75,11 +78,15 @@ class Playlist(Base):
     name = db.Column(db.String)
 
     # Define the relationship to the Track model
-    # tracks = db.relationship(
-    #     "Track", secondary=PlayTrack.__table__, back_populates="playlists")
-    # play_tracks = db.relationship("PlayTrack", backref=db.backref("playlist"))
+    tracks = db.relationship(
+        "Track", secondary=PlayTrack.__table__, backref="playlists")
+    play_tracks = db.relationship("PlayTrack", backref="playlist")
 
     # TODO Add all the total playlist metadata here?
+
+    @property
+    def get_tracks(self):
+        return [(pt.track, pt) for pt in self.play_tracks]
 
     def to_dict(self, rel=False):
         tracks = [tr.to_dict() for tr in self.tracks]
@@ -107,6 +114,9 @@ class Artist(db.Model):
     __tablename__ = 'artists'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+
+    tracks = db.relationship(
+        "Track", secondary=artist_track_association, backref="artists")
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(

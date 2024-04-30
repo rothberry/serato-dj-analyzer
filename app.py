@@ -10,6 +10,7 @@ import os
 from pprint import pp
 from time import strftime
 
+
 # app = Flask(__name__)
 # # Replace with your database URI
 # # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sera2.db'
@@ -33,6 +34,8 @@ def create_app(test_config=None):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///serato.db'
     app.config["TEMP_FOLDER"] = './temp'
+    # app.config['SQLALCHEMY_ECHO'] = True
+
     app.json.compact = False
     CORS(app)
     migrate = Migrate(app, db)
