@@ -8,10 +8,10 @@ reset:
 	python lib/reset.py
 
 debug:
-	python lib/debug.py
+	python debug.py
 
 flask:
-	python lib/app.py
+	python app.py
 
 env:
 	export FLASK_APP=app.py

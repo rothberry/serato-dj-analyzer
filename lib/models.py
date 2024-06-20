@@ -56,16 +56,15 @@ class Track(Base):
     # ? Calculating instance methods?
 
     def times_played(self):
-        return
-        # return len(self.play_tracks)
+        return len(self.play_tracks)
 
     def average_length_played(self):
         pass
 
-    # def to_dict(self):
-    #     dct = self.__dict__
-    #     dct.pop("_sa_instance_state")
-    #     return dct
+    def to_dict(self):
+        dct = self.__dict__
+        dct.pop("_sa_instance_state")
+        return dct
 
     def __repr__(self):
         return f"Name: {self.title}"
@@ -87,6 +86,21 @@ class Playlist(Base):
     @property
     def get_tracks(self):
         return [(pt.track, pt) for pt in self.play_tracks]
+
+    @property
+    def track_count(self):
+        return len(self.play_tracks)
+
+    def show_setlist(self):
+        tracklist = []
+        for pt in self.play_tracks:
+            tr = pt.track.__dict__
+            tr["artists"] = [art.name for art in pt.track.artists]
+            tr["genre"] = pt.track.genre.name
+            if tr["_sa_instance_state"]:
+                tr.pop("_sa_instance_state")
+            tracklist.append(tr)
+        return tracklist
 
     def to_dict(self, rel=False):
         tracks = [tr.to_dict() for tr in self.tracks]
@@ -111,6 +125,7 @@ class Playlist(Base):
 
 # TODO currently just for documenting, will need to find a way to normalize all artists given wildly different names
 class Artist(db.Model):
+
     __tablename__ = 'artists'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)

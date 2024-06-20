@@ -3,6 +3,8 @@ from ipdb import set_trace
 from pprint import pp
 
 
+# TODO Things to add to the parser
+
 class CSVParser():
 
     def __init__(self, setlist=None, playlist_data=None, playlist_name=None) -> None:

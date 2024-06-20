@@ -1,6 +1,7 @@
 from ipdb import set_trace
 from lib.models import Base, Playlist, Track, Artist, Genre, PlayTrack
 from py_term_helpers import star_line, center_string_stars, top_wrap
+from lib.parser import TxtParser, CSVParser
 from pprint import pp
 import sys
 import os
@@ -60,15 +61,15 @@ if __name__ == "__main__":
         test_tracks = []
         for t in tracks:
             test_tracks.append(Track(**t[0]))
+
         commit_instances(test_tracks)
 
         # TODO mor effient seed logic
         for i, t in enumerate(tracks):
             artist_tracks = [test_artists[id] for id in t[1]]
-            # set_trace()
             for at in artist_tracks:
                 test_tracks[i].artists.append(at)
-            # db.session.add(t)
+
         commit_instances(test_tracks)
 
         center_string_stars("Creating Test Playlists...")
@@ -82,30 +83,22 @@ if __name__ == "__main__":
             play_time = "00:05:00"
             for pt in p_tracks:
                 play_track = PlayTrack(
-                    playlist_id=t_playlist.id, track_id=pt.id, playtime=play_time)
+                    playlist_id=t_playlist.id,
+                    track_id=pt.id,
+                    playtime=play_time)
                 commit_instances(play_track)
 
             test_playlists.append(t_playlist)
 
         commit_instances(test_playlists)
 
-        test_playlists[0].get_tracks
-        set_trace()
 
-        # for pl in test_playlists:
-        #     play_tracks = sample(test_tracks, randint(1,4))
-        #     set_trace()
+        center_string_stars("SEEDING TEST FILES...")
 
-        # db.session.add_all([a1, g1, t1])
-        # db.session.commit()
-
-        # a1.tracks.append(t1)
-        # db.session.add(a1)
-        # db.session.commit()
-
-        # t2 = Track(title="Gen Song", bpm=100, key="Am", genre_id=g1.id)
-        # db.session.add(t2)
-        # db.session.commit()
+        # seed the first file with all fields: artist/genre/etc
+        # seed the second with missing fields and need to check if their is a similar entry in the track table
+        all_fields = CSVParser(setlist="All Fields")
+        all_fields.create_setlist()
 
         set_trace()
 
