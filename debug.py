@@ -1,6 +1,7 @@
 from app import create_app
 from lib.models import Playlist, Track, PlayTrack, Genre, Artist
 from lib.parser import CSVParser, TxtParser
+from lib.helper import FlaskHelper, MiscHelper
 from pprint import pp
 from ipdb import set_trace
 from py_term_helpers import center_string_stars, top_wrap
@@ -18,8 +19,14 @@ with app.app_context():
     top_wrap("DEBUG MODE")
     print([pl.track_count for pl in playlists])
 
-    all_fields = TxtParser(playlist_name="all_fields")
-    all_fields.create_setlist("sets/all_fields.txt")
+    parser1 = TxtParser(playlist_name="parser1")
+    parser1.create_setlist("sets/all_fields.txt")
+
+    parser2 = CSVParser(playlist_name="parser2")
+    parser2.create_setlist('sets/4-6-24.csv')
+
+    p1_set = parser1.setlist
+    p2_set = parser2.setlist
 
     set_trace()
 

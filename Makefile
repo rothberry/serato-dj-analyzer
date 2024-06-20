@@ -2,7 +2,8 @@ install:
 	pipenv install
 
 seed:
-	python lib/seed.py
+	python -m lib.seed
+	# python lib/seed.py
 
 reset:
 	python lib/reset.py

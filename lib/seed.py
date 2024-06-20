@@ -1,10 +1,12 @@
 from ipdb import set_trace
 from lib.models import Base, Playlist, Track, Artist, Genre, PlayTrack
 from py_term_helpers import star_line, center_string_stars, top_wrap
+from lib.helper import FlaskHelper
 from lib.parser import TxtParser, CSVParser
 from pprint import pp
 import sys
 import os
+import re
 from random import sample, shuffle, randint
 
 # python -m lib.seed # to run seed for now
@@ -25,6 +27,7 @@ if __name__ == "__main__":
     app = create_app()
     with app.app_context():
         top_wrap("SEEDING", "+")
+        """
 
         center_string_stars("Dropping..")
         db.drop_all()
@@ -90,17 +93,47 @@ if __name__ == "__main__":
 
             test_playlists.append(t_playlist)
 
-        commit_instances(test_playlists)
-
+        commit_instances(test_playlists) """
 
         center_string_stars("SEEDING TEST FILES...")
 
         # seed the first file with all fields: artist/genre/etc
         # seed the second with missing fields and need to check if their is a similar entry in the track table
-        all_fields = CSVParser(setlist="All Fields")
-        all_fields.create_setlist()
 
-        set_trace()
+        parser1 = TxtParser(playlist_name="parser1")
+        parser1.create_setlist("sets/all_fields.txt")
+
+        parser2 = CSVParser(playlist_name="parser2")
+        parser2.create_setlist('sets/4-6-24.csv')
+
+        p1_set = parser1.setlist
+        p2_set = parser2.setlist
+
+        # parser_playlist_1 = Playlist(name="all_fields_txt")
+        test_playlist = Playlist.query.first()
+
+        # Will probably need another table(?) or something to keep track of all the current remix aliases that these dumb producers use.
+        # maybe look for "re" prefix?
+        remix_aliases = {"re", "remix", "edit", "flip", "redrum", "recrank"}
+
+        for tr in p1_set:
+            # track: title, bpm, key, is_remix
+            #   title => has all lowercase, search in table
+            #   remix => search title for remix keywords
+            #   genre => as a finder func
+            # artist(s): name
+            #   separate individual artists
+
+            # Look through track table for previous instance
+            current_track = db.session.query(Track).filter_by(
+                title=tr["name"].lower()).one_or_none()
+            set_trace()
+            if not current_track:
+
+                current_track = Track(
+                    title=tr["name"].lower(),
+
+                )
 
         # Close the session
         db.session.close()

@@ -20,8 +20,6 @@ class CSVParser():
         with open(data_path, newline="") as csvfile:
             csv_reader = csv.DictReader(csvfile)
             for x, row in enumerate(csv_reader):
-                row.pop("notes")
-                row.pop("deck")
                 setlist.append(row)
         self.playlist_data = setlist[0]
         self.setlist = setlist[1:]
