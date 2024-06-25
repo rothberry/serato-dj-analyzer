@@ -35,7 +35,7 @@ if __name__ == "__main__":
         center_string_stars("Creating Tables..")
         db.create_all()
 
-        genres = ['Trap', 'House', "Drum & Bass", "Techno"]
+        genres = ['trap', 'house', "drum & bass", "techno"]
 
         center_string_stars("Creating Test Genres...")
         test_genres = []
@@ -44,7 +44,7 @@ if __name__ == "__main__":
         commit_instances(test_genres)
 
         center_string_stars("Creating Test Artists...")
-        artists = ["Artist 1", "Artist 2", "Artist 3", "Artist 4"]
+        artists = ["artist 1", "artist 2", "artist 3", "artist 4"]
         test_artists = []
         for a in artists:
             test_artists.append(Artist(name=a))
@@ -52,13 +52,13 @@ if __name__ == "__main__":
 
         center_string_stars("Creating Test Tracks...")
         tracks = [
-            ({"title": "Test 1", "bpm": 140, "key": "Am",
+            ({"title": "test 1", "bpm": 140, "key": "Am",
              "is_remix": False, "genre_id": test_genres[0].id}, (1,)),
-            ({"title": "Test 2", "bpm": 70, "key": "Am",
+            ({"title": "test 2", "bpm": 70, "key": "Am",
              "is_remix": False, "genre_id": test_genres[0].id}, (2,)),
-            ({"title": "Test 3", "bpm": 150, "key": "Cm",
+            ({"title": "test 3", "bpm": 150, "key": "Cm",
              "is_remix": True, "genre_id": test_genres[1].id}, (1, 2)),
-            ({"title": "Test 4", "bpm": 125, "key": "F",
+            ({"title": "test 4", "bpm": 125, "key": "F",
              "is_remix": False, "genre_id": test_genres[2].id}, (1, 3)),
         ]
         test_tracks = []
@@ -116,7 +116,7 @@ if __name__ == "__main__":
         # maybe look for "re" prefix?
         remix_aliases = {"re", "remix", "edit", "flip", "redrum", "recrank"}
 
-        for tr in p1_set:
+        for tr in p1_set[3:]:
             # track: title, bpm, key, is_remix
             #   title => has all lowercase, search in table
             #   remix => search title for remix keywords
@@ -128,12 +128,22 @@ if __name__ == "__main__":
             current_track = db.session.query(Track).filter_by(
                 title=tr["name"].lower()).one_or_none()
             set_trace()
-            if not current_track:
+            if current_track:
+                print("FOUND TRACK IN DATABASE")
+                # set track to current playlist
+            else:
+                print("CREATING NEW TRACK")
+                # Needs to create/find genre
+                # Needs to create/find track
+                # Needs to create/find artist(s)
+                # Needs to create/find play_track
+                set_trace()
+                if tr["genre"]:
+                    
 
-                current_track = Track(
-                    title=tr["name"].lower(),
 
-                )
+                for field in Track.fields():
+                    set_trace()
 
         # Close the session
         db.session.close()

@@ -56,6 +56,17 @@ class Track(Base):
 
     # ? Calculating instance methods?
 
+    # @classmethod
+    # def dynamic_create(cls, track_dict):
+    #     # creates a track instance based off of args that align with the Track
+    #     set_trace()
+    #     return
+
+    @staticmethod
+    def fields():
+        # returns all columns as tuple
+        return ('id', 'title', 'bpm', 'key', 'is_remix')
+
     def times_played(self):
         return len(self.play_tracks)
 

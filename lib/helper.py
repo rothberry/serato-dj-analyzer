@@ -6,6 +6,14 @@ class FlaskHelper():
         if not found_model:
             return model(**kwargs)
         return found_model
+    
+    @classmethod
+    def dynamic_create(cls, track_dict):
+        from ipdb import set_trace
+        # creates a track instance based off of args that align with the Track
+        set_trace()
+        return
+
 
     # Moved to Playlist Model
 
