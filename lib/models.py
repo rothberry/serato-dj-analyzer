@@ -73,13 +73,15 @@ class Track(Base):
     def average_length_played(self):
         pass
 
-    def to_dict(self):
+    def print_dict(self):
         dct = self.__dict__
         dct.pop("_sa_instance_state")
         return dct
 
     def __repr__(self):
-        return f"Name: {self.title}"
+        # return f'("id": {self.id},"title": {self.title},"key": {self.key},"genre_id": {self.genre_id},"bpm": {self.bpm},"is_remix": {self.is_remix})'
+        # return f'({self.id},{self.title},{self.key},{self.genre_id},{self.bpm},{self.is_remix})'
+        return f'({self.id}: {self.title})'
 
 
 class Playlist(Base):
@@ -123,7 +125,7 @@ class Playlist(Base):
         return dct
 
     def __repr__(self):
-        return f"Name: {self.name}"
+        return f"({self.id}: {self.name} #{self.track_count})"
 
     @classmethod
     def create_sets(cls, setlist):
@@ -149,7 +151,8 @@ class Artist(db.Model):
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    def __repr__(self): return f'''id: {self.id} / name: {self.name}'''
+    def __repr__(self):
+        return f'({self.id}: {self.name})'
 
 # TODO also currently just for doc
 
@@ -163,4 +166,5 @@ class Genre(db.Model):
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    def __repr__(self): return f'''id: {self.id} / name: {self.name}'''
+    def __repr__(self):
+        return f'({self.id}: {self.name})'
