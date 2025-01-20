@@ -41,70 +41,19 @@ if __name__ == "__main__":
             test_genres.append(Genre(name=g))
         commit_instances(test_genres)
 
-        center_string_stars("Creating Test Artists...")
-        artists = ["artist 1", "artist 2", "artist 3", "artist 4"]
-        test_artists = []
-        for a in artists:
-            test_artists.append(Artist(name=a))
-        commit_instances(test_artists)
-
-        center_string_stars("Creating Test Tracks...")
-        tracks = [
-            ({"title": "test 1", "bpm": 140, "key": "Am",
-             "is_remix": False, "genre_id": test_genres[0].id}, (1,)),
-            ({"title": "test 2", "bpm": 70, "key": "Am",
-             "is_remix": False, "genre_id": test_genres[0].id}, (2,)),
-            ({"title": "test 3", "bpm": 150, "key": "Cm",
-             "is_remix": True, "genre_id": test_genres[1].id}, (1, 2)),
-            ({"title": "test 4", "bpm": 125, "key": "F",
-             "is_remix": False, "genre_id": test_genres[2].id}, (1, 3)),
-        ]
-        test_tracks = []
-        for t in tracks:
-            test_tracks.append(Track(**t[0]))
-
-        commit_instances(test_tracks)
-
-        # TODO mor effient seed logic
-        for i, t in enumerate(tracks):
-            artist_tracks = [test_artists[id] for id in t[1]]
-            for at in artist_tracks:
-                test_tracks[i].artists.append(at)
-
-        commit_instances(test_tracks)
-
-        center_string_stars("Creating Test Playlists...")
-        playlists = ["Play1", "Play2", "Play3", "Play4", "Play5",]
-        test_playlists = []
-        for pl in playlists:
-            t_playlist = Playlist(name=pl)
-            commit_instances(t_playlist)
-            p_tracks = sample(test_tracks, randint(1, len(test_tracks)))
-            shuffle(p_tracks)
-            play_time = "00:05:00"
-            for pt in p_tracks:
-                play_track = PlayTrack(
-                    playlist_id=t_playlist.id,
-                    track_id=pt.id,
-                    playtime=play_time)
-                commit_instances(play_track)
-
-            test_playlists.append(t_playlist)
-
-        commit_instances(test_playlists)
-
         center_string_stars("SEEDING TEST FILES...")
 
-        # seed the first file with all fields: artist/genre/etc
-        # seed the second with missing fields and need to check if their is a similar entry in the track table
+        parser1 = CSVParser(playlist_name="parser1")
+        parser1.create_setlist('sets/csv/4-5-24.csv')
 
         parser2 = CSVParser(playlist_name="parser2")
-        parser2.create_setlist('sets/4-6-24.csv')
+        parser2.create_setlist('sets/csv/4-6-24.csv')
 
+        p1_set = parser1.setlist
         p2_set = parser2.setlist
 
-        # parser_playlist_1 = Playlist(name="all_fields_txt")
-        test_playlist = Playlist(name="csv_seed")
+        test_playlist_1 = Playlist(name="p1")
+        test_playlist_2 = Playlist(name="p2")
 
         # Will probably need another table(?) or something to keep track of all the current remix aliases that these dumb producers use.
         # maybe look for "re" prefix?
@@ -123,7 +72,6 @@ if __name__ == "__main__":
                 title=tr["name"].lower()).one_or_none()
             if current_track:
                 print("FOUND TRACK IN DATABASE")
-                # set track to current playlist
             else:
                 print("CREATING NEW TRACK")
                 tr_genre, tr_artist = None, None
@@ -142,13 +90,12 @@ if __name__ == "__main__":
                         tr_artist = Artist(name=tr["artist"])
                         commit_instances(tr_artist)
                         tr.pop("artist")
-
+                set_trace()
                 current_track = Track(
                     title=tr["name"], bpm=tr["bpm"], key=MiscHelper.camelot_converter(tr["key"]),)
-            
+
             # Needs to create/find play_track
             set_trace()
-
 
         # Close the session
         db.session.close()

@@ -18,10 +18,13 @@ env:
 	export FLASK_APP=app.py
 	
 upgrade:
-	flask --app=lib/app.py db upgrade
+	flask db upgrade
+	# flask --app=lib/app.py db upgrade
 
 downgrade:
-	flask --app=lib/app.py db downgrade
+	flask db downgrade
+	# flask --app=lib/app.py db downgrade
 
 migrate: 
-	flask --app=lib/app.py db migrate -m "${m}"
+	flask db migrate -m "${m}"
+	# flask --app=lib/app.py db migrate -m "${m}"

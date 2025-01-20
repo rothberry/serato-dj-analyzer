@@ -125,7 +125,7 @@ class Playlist(Base):
         return dct
 
     def __repr__(self):
-        return f"({self.id}: {self.name} #{self.track_count})"
+        return f"{self.id}: {self.name} #{self.track_count}"
 
     @classmethod
     def create_sets(cls, setlist):

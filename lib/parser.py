@@ -1,6 +1,7 @@
 import csv
 from ipdb import set_trace
 from pprint import pp
+from lib.helper import MiscHelper, FlaskHelper
 
 
 # TODO Things to add to the parser
@@ -19,7 +20,23 @@ class CSVParser():
         # self.source = data_path
         with open(data_path, newline="") as csvfile:
             csv_reader = csv.DictReader(csvfile)
-            for _, row in enumerate(csv_reader):
+            data = next(csv_reader)
+            for row in csv_reader:
+                # normalize row before appending
+                #   all lower
+                #   correct types
+                for k in row:
+                    # print(row[k], k)
+                    print(row)
+                    if k in ("name", "artist", "genre", "key"):
+                        row[k] = row[k].lower()
+                    if k in ("playtime",) :
+                        set_trace()
+                        row[k] = MiscHelper.convert_ts_to_seconds(row[k])
+                    if k in ("bpm", ):
+                        row[k] = float(row[k])
+                    
+
                 setlist.append(row)
         self.playlist_data = setlist[0]
         self.setlist = setlist[1:]

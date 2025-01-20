@@ -85,4 +85,4 @@ class MiscHelper():
             "e": "12B",
         }
         return camelot[key.lower()]
-
+    
