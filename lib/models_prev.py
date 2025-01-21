@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from lib.helper import FlaskHelper, MiscHelper
+from lib.helper import FlaskHelper
 from ipdb import set_trace
 
 db = SQLAlchemy()
@@ -21,20 +21,12 @@ class PlayTrack(Base):
     id = db.Column(db.Integer, primary_key=True)
     playlist_id = db.Column(db.Integer, db.ForeignKey('playlists.id'))
     track_id = db.Column(db.Integer, db.ForeignKey('tracks.id'))
-    start_time = db.Column(db.DateTime)
-    end_time = db.Column(db.DateTime)
-
+    playtime = db.Column(db.String)
+    start_time = db.Column(db.String)
+    end_time = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
-
-    
-    
-    def playtime(self):
-        # end - start time in secs (or millis)
-        end_secs = MiscHelper.convert_ts_to_seconds(self.end_time)
-        start_secs = MiscHelper.convert_ts_to_seconds(self.start_time)
-        return end_secs - start_secs
 
     def to_dict(self):
         dct = self.__dict__
@@ -53,35 +45,48 @@ class Track(Base):
     bpm = db.Column(db.Float)
     key = db.Column(db.String)
     is_remix = db.Column(db.Boolean)
-    # TODO How to differ between remixer and og artist?
 
     genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'), nullable=True)
 
+    # Define the relationship to the Playlist model
+    # playlists = db.relationship(
+    #     "Playlist", secondary=PlayTrack.__table__, back_ref=db.backref("tracks"))
+    # play_tracks = db.relationship("PlayTrack", backref=db.backref("track"))
+    artists = db.relationship(
+        "Artist", secondary=artist_track_association, backref=db.backref("tracks"))
     genre = db.relationship("Genre", backref="tracks")
 
-    play_tracks = db.relationship("PlayTrack", backref="track")
+    @classmethod
+    def create_track_data(cls, meta_data, playlist):
+        tr = FlaskHelper.find_or_create(
+            db.session, cls, title=meta_data["name"])
+        tr.bpm = meta_data["bpm"]
+        tr.key = meta_data["key"]
+        # TODO Will need to split artists (i.e. Wax Motif & BRKLYN) maybe already have artists in the db, and use this to check if they are there?
+        artist = Artist(name=meta_data["artist"])
+        artist.tracks.append(tr)
+        db.session.add(tr)
+        db.session.commit()
+        pt = PlayTrack(track=tr, playlist=playlist,
+                       playtime=meta_data["playtime"])
+        db.session.add(pt)
+        db.session.commit()
+        set_trace()
 
     # ? Calculating instance methods?
-    @staticmethod
-    def fields():
-        # returns all columns as tuple
-        return ('id', 'title', 'bpm', 'key', 'is_remix')
-
     def times_played(self):
         return len(self.play_tracks)
 
     def average_length_played(self):
         pass
 
-    def print_dict(self):
+    def to_dict(self):
         dct = self.__dict__
         dct.pop("_sa_instance_state")
         return dct
 
     def __repr__(self):
-        # return f'("id": {self.id},"title": {self.title},"key": {self.key},"genre_id": {self.genre_id},"bpm": {self.bpm},"is_remix": {self.is_remix})'
-        # return f'({self.id},{self.title},{self.key},{self.genre_id},{self.bpm},{self.is_remix})'
-        return f'({self.id}: {self.title})'
+        return f"Name: {self.title}"
 
 
 class Playlist(Base):
@@ -92,29 +97,10 @@ class Playlist(Base):
 
     # Define the relationship to the Track model
     tracks = db.relationship(
-        "Track", secondary=PlayTrack.__table__, backref="playlists")
-    play_tracks = db.relationship("PlayTrack", backref="playlist")
+        "Track", secondary=PlayTrack.__table__, back_populates="playlists")
+    play_tracks = db.relationship("PlayTrack", backref=db.backref("playlist"))
 
     # TODO Add all the total playlist metadata here?
-
-    @property
-    def get_tracks(self):
-        return [(pt.track, pt) for pt in self.play_tracks]
-
-    @property
-    def track_count(self):
-        return len(self.play_tracks)
-
-    def show_setlist(self):
-        tracklist = []
-        for pt in self.play_tracks:
-            tr = pt.track.__dict__
-            tr["artists"] = [art.name for art in pt.track.artists]
-            tr["genre"] = pt.track.genre.name
-            if tr["_sa_instance_state"]:
-                tr.pop("_sa_instance_state")
-            tracklist.append(tr)
-        return tracklist
 
     def to_dict(self, rel=False):
         tracks = [tr.to_dict() for tr in self.tracks]
@@ -125,7 +111,7 @@ class Playlist(Base):
         return dct
 
     def __repr__(self):
-        return f"{self.id}: {self.name} #{self.track_count}"
+        return f"Name: {self.name}"
 
     @classmethod
     def create_sets(cls, setlist):
@@ -137,24 +123,16 @@ class Playlist(Base):
             # Track.create_track_data(db.session, meta_data, pl)
 
 
-# TODO currently just for documenting, will need to find a way to normalize all artists given wildly different names
 class Artist(db.Model):
-
     __tablename__ = 'artists'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-
-    tracks = db.relationship(
-        "Track", secondary=artist_track_association, backref="artists")
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    def __repr__(self):
-        return f'({self.id}: {self.name})'
-
-# TODO also currently just for doc
+    def __repr__(self): return f'''id: {self.id} / name: {self.name}'''
 
 
 class Genre(db.Model):
@@ -166,5 +144,4 @@ class Genre(db.Model):
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    def __repr__(self):
-        return f'({self.id}: {self.name})'
+    def __repr__(self): return f'''id: {self.id} / name: {self.name}'''

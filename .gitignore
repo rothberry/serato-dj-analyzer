@@ -3,3 +3,5 @@
 /temp
 /lib/instance/serato.db
 NOTES.md
+.pytest_cache
+*__pycache__
