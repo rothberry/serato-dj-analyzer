@@ -1,46 +1,82 @@
 import csv
 from ipdb import set_trace
 from pprint import pp
+from py_term_helpers import top_wrap, center_string_stars as stars
 from lib.helper import MiscHelper, FlaskHelper
+from datetime import datetime, date, time, timezone
 
 
 # TODO Things to add to the parser
 
 class CSVParser():
 
-    def __init__(self, setlist=None, playlist_data=None, playlist_name=None) -> None:
-        self.setlist = setlist
-        self.playlist_data = playlist_data
+    def __init__(self, playlist_name=None) -> None:
+        self.setlist = []
+        self.playlist_data = []
         self.playlist_name = playlist_name
         # ? Prob don't really need source 🤷‍♀️
         # self.source = ""
 
     def create_setlist(self, data_path):
-        setlist = list()
+        tz = datetime.now().astimezone().tzname()
         # self.source = data_path
         with open(data_path, newline="") as csvfile:
             csv_reader = csv.DictReader(csvfile)
+
+            # * create playlist_data metadata
             data = next(csv_reader)
+            # ! omit unneed fields
+            for k in ("notes", 'deck'):
+                data.pop(k, None)
+            data["start_time"] = data.pop("start time")
+            data["end_time"] = data.pop("end time")
+            self.playlist_data = list(data.keys())
+
+            # * create playlist_name if not
+            self.playlist_name = self.playlist_name or data['name']
+
+            start_date = data["start_time"].split(" ")[0]
+            end_date = data["end_time"].split(" ")[0]
+            strformat = '%m/%d/%Y %I:%M:%S %p %Z'
+            utcformat = '%Y-%m-%d %H:%M:%S'
             for row in csv_reader:
                 # normalize row before appending
                 #   all lower
                 #   correct types
+                track_data = dict()
                 for k in row:
-                    # print(row[k], k)
-                    print(row)
-                    if k in ("name", "artist", "genre", "key"):
-                        row[k] = row[k].lower()
-                    if k in ("playtime",) :
-                        set_trace()
-                        row[k] = MiscHelper.convert_ts_to_seconds(row[k])
-                    if k in ("bpm", ):
-                        row[k] = float(row[k])
-                    
+                    v = row[k]
+                    # print(row, k, v)
+                    # ! Removed 'playtime' as column, will calc based off start/endtime
+                    """ if k in ("playtime",) : row[k] = MiscHelper.convert_ts_to_seconds(row[k]) """
+                    try:
+                        if k in ("bpm", ):
+                            v = float(v)
+                        elif k in ("start time", "end time"):
+                            # TODO have start and end time as UTC
+                            # ? will assume start and end times are all on the same day
+                            # if start_date == end_date:
+                            k = k.replace(" ", "_")
+                            v = datetime.strptime(
+                                f'{start_date} {v} {tz}', strformat)
+                            # else:
+                            # ? will need to figure out if the playing past midnight
+                        else:
+                            v = v.lower()
 
-                setlist.append(row)
-        self.playlist_data = setlist[0]
-        self.setlist = setlist[1:]
-        return setlist
+                        # add new key value track data
+                        # ! omit
+                        if k not in ("notes", "deck"):
+                            track_data[k] = v
+                    except Exception as err:
+                        stars((err, k, v))
+                        set_trace()
+                # set_trace()
+                self.setlist.append(track_data)
+        # set_trace()
+        stars(
+            f'setlist {self.playlist_name} created with {len(self.setlist)} tracks')
+        return
 
 
 class TxtParser():

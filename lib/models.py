@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from lib.helper import FlaskHelper
+from lib.helper import FlaskHelper, MiscHelper
 from ipdb import set_trace
 
 db = SQLAlchemy()
@@ -21,13 +21,20 @@ class PlayTrack(Base):
     id = db.Column(db.Integer, primary_key=True)
     playlist_id = db.Column(db.Integer, db.ForeignKey('playlists.id'))
     track_id = db.Column(db.Integer, db.ForeignKey('tracks.id'))
-    playtime = db.Column(db.String)
-    start_time = db.Column(db.String)
-    end_time = db.Column(db.String)
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+
+    
+    
+    def playtime(self):
+        # end - start time in secs (or millis)
+        end_secs = MiscHelper.convert_ts_to_seconds(self.end_time)
+        start_secs = MiscHelper.convert_ts_to_seconds(self.start_time)
+        return end_secs - start_secs
 
     def to_dict(self):
         dct = self.__dict__
@@ -55,13 +62,6 @@ class Track(Base):
     play_tracks = db.relationship("PlayTrack", backref="track")
 
     # ? Calculating instance methods?
-
-    # @classmethod
-    # def dynamic_create(cls, track_dict):
-    #     # creates a track instance based off of args that align with the Track
-    #     set_trace()
-    #     return
-
     @staticmethod
     def fields():
         # returns all columns as tuple

@@ -18,23 +18,24 @@ class FlaskHelper():
 
     @classmethod
     def create_sets(cls, setlist):
-        from models import db, Playlist, Track, Artist
+        from models import db, Playlist
         pl = Playlist(name=setlist.playlist_name)
         db.session.add(pl)
         db.session.commit()
         for track in setlist.setlist:
-            Track.create_track_data(db.session, track, pl)
+            cls.create_track_data(track, pl)
 
     # Moved to Track Model
     @classmethod
-    def create_track_data(cls, session, track, playlist):
-        tr = FlaskHelper.find_or_create(session, cls, title=track["name"])
-        session.add(tr)
-        session.commit()
+    def create_track_data(cls, track, playlist):
+        from models import db, PlayTrack
+        tr = FlaskHelper.find_or_create(db.session, cls, title=track["name"])
+        db.session.add(tr)
+        db.session.commit()
         pt = PlayTrack(track=tr, playlist=playlist,
                        start_time=track["start time"], end_time=track["end time"], playtime=track["playtime"])
-        session.add(pt)
-        session.commit()
+        db.session.add(pt)
+        db.session.commit()
 
     @classmethod
     def test_kwargs(cls, first, **kwargs):

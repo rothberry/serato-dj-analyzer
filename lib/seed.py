@@ -43,23 +43,24 @@ if __name__ == "__main__":
 
         center_string_stars("SEEDING TEST FILES...")
 
+        # parser creates a list of dicts for the set with title
         parser1 = CSVParser(playlist_name="parser1")
-        parser1.create_setlist('sets/csv/4-5-24.csv')
-
-        parser2 = CSVParser(playlist_name="parser2")
-        parser2.create_setlist('sets/csv/4-6-24.csv')
-
+        parser1.create_setlist('sets/csv/1-20-2025.csv')
         p1_set = parser1.setlist
-        p2_set = parser2.setlist
-
         test_playlist_1 = Playlist(name="p1")
-        test_playlist_2 = Playlist(name="p2")
+
+        set_trace()
+
 
         # Will probably need another table(?) or something to keep track of all the current remix aliases that these dumb producers use.
         # maybe look for "re" prefix?
         remix_aliases = {"re", "remix", "edit", "flip", "redrum", "recrank"}
 
-        for tr in p2_set:
+
+        # TODO
+        """ move this outside of seed 
+          """
+        for tr in p1_set:
             # track: title, bpm, key, is_remix
             #   title => has all lowercase, search in table
             #   remix => search title for remix keywords
