@@ -163,6 +163,10 @@ class RemixAlias(Base):
     __tablename__ = "remix_alias"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+
+    def __repr__(self):
+        return f'({self.id}: {self.name})'
