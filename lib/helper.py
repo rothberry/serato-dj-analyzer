@@ -1,3 +1,7 @@
+from ipdb import set_trace
+from py_term_helpers import center_string_stars as stars
+
+
 class FlaskHelper():
 
     @classmethod
@@ -7,14 +11,79 @@ class FlaskHelper():
             return model(**kwargs)
         return found_model
 
-    # TODO move this into the Playlist Model?
     @classmethod
-    def dynamic_create(cls, track_dict):
-        from ipdb import set_trace
+    def commit_instances(cls, data):
+        from app import db
+        if type(data) is list:
+            db.session.add_all(data)
+        else:
+            db.session.add(data)
+        db.session.commit()
+
+    # TODO move this into the Playlist Model?
+
+    @classmethod
+    def dynamic_create(cls, parser_dict):
         # creates a track instance based off of args that align with the Track
-        set_trace()
+        from lib.models import Playlist, Track, Artist, Genre, PlayTrack
+        from app import db
+
+        try:
+
+            pl = Playlist(name=parser_dict.playlist_name)
+            cls.commit_instances(pl)
+
+            # set_trace()
+
+            for tr in parser_dict.setlist:
+                # track: title, bpm, key, is_remix
+                #   title => has all lowercase, search in table
+                #   remix => search title for remix keywords
+                #   genre => as a finder func
+                # artist(s): name
+                #   separate individual artists
+
+                # Look through track table for previous instance
+                current_track = db.session.query(Track).filter_by(
+                    title=tr["name"].lower()).one_or_none()
+                set_trace()
+                if current_track:
+                    print("FOUND TRACK IN DATABASE")
+                else:
+                    print("CREATING NEW TRACK")
+                    tr_genre, tr_artist = None, None
+                    # TODO refactor into more dynamic setters
+                    if tr.get("genre"):
+                        tr_genre = Genre.query.filter_by(
+                            name=tr["genre"]).one_or_none()
+                        if not tr_genre:
+                            tr_genre = Genre(name=tr["genre"])
+                            cls.commit_instances(tr_genre)
+                            tr.pop("genre")
+                    
+                    # TODO currently will not separate artists in collabs/remixees
+                    if tr.get("artist"):
+                        tr_artist = Artist.query.filter_by(
+                            name=tr["artist"]).one_or_none()
+                        if not tr_artist:
+                            tr_artist = Artist(name=tr["artist"])
+                            cls.commit_instances(tr_artist)
+                            tr.pop("artist")
+                    set_trace()
+                    current_track = Track(
+                        title=tr["name"], bpm=tr["bpm"], key=MiscHelper.camelot_converter(tr["key"]),)
+
+        except Exception as err:
+            set_trace()
+
+            # Needs to create/find play_track
+
         return
 
+    @classmethod
+    def separate_artists(cls, artists):
+        # effienctly separate artists in string
+        pass
     # Moved to Playlist Model
 
     @classmethod
@@ -87,4 +156,3 @@ class MiscHelper():
             "e": "12B",
         }
         return camelot[key.lower()]
-    
