@@ -33,8 +33,6 @@ class FlaskHelper():
             pl = Playlist(name=parser_dict.playlist_name)
             cls.commit_instances(pl)
 
-            # set_trace()
-
             for tr in parser_dict.setlist:
                 # track: title, bpm, key, is_remix
                 #   title => has all lowercase, search in table
@@ -46,7 +44,6 @@ class FlaskHelper():
                 # Look through track table for previous instance
                 current_track = db.session.query(Track).filter_by(
                     title=tr["name"].lower()).one_or_none()
-                set_trace()
                 if current_track:
                     print("FOUND TRACK IN DATABASE")
                 else:
@@ -60,7 +57,7 @@ class FlaskHelper():
                             tr_genre = Genre(name=tr["genre"])
                             cls.commit_instances(tr_genre)
                             tr.pop("genre")
-                    
+
                     # TODO currently will not separate artists in collabs/remixees
                     if tr.get("artist"):
                         tr_artist = Artist.query.filter_by(
@@ -69,10 +66,9 @@ class FlaskHelper():
                             tr_artist = Artist(name=tr["artist"])
                             cls.commit_instances(tr_artist)
                             tr.pop("artist")
-                    set_trace()
-                    current_track = Track(
-                        title=tr["name"], bpm=tr["bpm"], key=MiscHelper.camelot_converter(tr["key"]),)
-
+                    new_track = Track(
+                        title=tr["name"], bpm=tr["bpm"], key=MiscHelper.camelot_converter(tr["key"]))
+            set_trace()
         except Exception as err:
             set_trace()
 
@@ -125,34 +121,46 @@ class MiscHelper():
         from datetime import timedelta
         return str(timedelta(seconds=seconds))
 
-    @classmethod
-    def camelot_converter(cls, key):
+    @staticmethod
+    def camelot_dict():
         camelot = {
             # minor
-            "abm": "1A", "g#m": "1A",
-            "ebm": "2A", "d#m": "2A",
-            "bbm": "3A", "a#m": "3A",
-            "fm": "4A",
-            "cm": "5A",
-            "gm": "6A",
-            "dm": "7A",
-            "am": "8A",
-            "em": "9A",
-            "bm": "10A",
-            "f#m": "11A", "gbm": "11A",
-            "dbm": "12A", "c#m": "12A",
+            "1a": ("abm", "g#m"),
+            "2a": ("ebm", "d#m"),
+            "3a": ("bbm", "a#m"),
+            "4a": ("fm",),
+            "5a": ("cm",),
+            "6a": ("gm",),
+            "7a": ("dm",),
+            "8a": ("am",),
+            "9a": ("em",),
+            "10a": ("bm",),
+            "11a": ("gbm", "f#m"),
+            "12a": ("dbm", "c#m"),
             # major
-            "b": "1B",
-            "f#": "2B", "gb": "2B",
-            "db": "3B", "c#": "3B",
-            "ab": "4B", "g#": "4B",
-            "eb": "5B", "d#": "5B",
-            "bb": "6B", "a#": "6B",
-            "f": "7B",
-            "c": "8B",
-            "g": "9B",
-            "d": "10B",
-            "a": "11B",
-            "e": "12B",
+            "1b": ("b",),
+            "2b": ("gb", "f#"),
+            "3b": ("db", "c#"),
+            "4b": ("ab", "g#"),
+            "5b": ("eb", "d#"),
+            "6b": ("bb", "a#"),
+            "7b": ("f", ),
+            "8b": ("c", ),
+            "9b": ("g", ),
+            "10b": ("d", ),
+            "11b": ("a", ),
+            "12b": ("e", ),
         }
-        return camelot[key.lower()]
+        return camelot
+
+    @classmethod
+    def camelot_converter(cls, key):
+        try:
+            if cls.camelot.get(key):
+                return key
+            else:
+                found_key = [(cam, keys)
+                             for cam, keys in cls.camelot.items() if key in keys][0]
+                return found_key[0]
+        except KeyError:
+            return None

@@ -28,8 +28,6 @@ class PlayTrack(Base):
     updated_at = db.Column(
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    
-    
     def playtime(self):
         # end - start time in secs (or millis)
         end_secs = MiscHelper.convert_ts_to_seconds(self.end_time)
@@ -127,18 +125,9 @@ class Playlist(Base):
     def __repr__(self):
         return f"{self.id}: {self.name} #{self.track_count}"
 
-    @classmethod
-    def create_sets(cls, setlist):
-        pl = Playlist(name=setlist.playlist_name)
-        db.session.add(pl)
-        db.session.commit()
-        for meta_data in setlist.setlist:
-            Track.create_track_data(meta_data, pl)
-            # Track.create_track_data(db.session, meta_data, pl)
-
 
 # TODO currently just for documenting, will need to find a way to normalize all artists given wildly different names
-class Artist(db.Model):
+class Artist(Base):
 
     __tablename__ = 'artists'
     id = db.Column(db.Integer, primary_key=True)
@@ -157,7 +146,7 @@ class Artist(db.Model):
 # TODO also currently just for doc
 
 
-class Genre(db.Model):
+class Genre(Base):
     __tablename__ = 'genres'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -168,3 +157,12 @@ class Genre(db.Model):
 
     def __repr__(self):
         return f'({self.id}: {self.name})'
+
+
+class RemixAlias(Base):
+    __tablename__ = "remix_alias"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
