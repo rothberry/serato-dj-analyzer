@@ -30,7 +30,7 @@ if __name__ == "__main__":
         parser1 = CSVParser(playlist_name="parser1")
         parser1.create_setlist('sets/csv/1-20-2025.csv')
 
-        FlaskHelper.dynamic_create(parser1)
+        FlaskHelper.dynamic_create(parser1, True)
         # Close the session
         db.session.close()
         center_string_stars("DON!")

@@ -1,5 +1,5 @@
 from ipdb import set_trace
-from py_term_helpers import center_string_stars as stars
+from py_term_helpers import top_wrap, center_string_stars as stars
 
 
 class FlaskHelper():
@@ -23,7 +23,7 @@ class FlaskHelper():
     # TODO move this into the Playlist Model?
 
     @classmethod
-    def dynamic_create(cls, parser_dict):
+    def dynamic_create(cls, parser_dict, debug=False):
         # creates a track instance based off of args that align with the Track
         from lib.models import Playlist, Track, Artist, Genre, PlayTrack
         from app import db
@@ -42,39 +42,55 @@ class FlaskHelper():
                 #   separate individual artists
 
                 # Look through track table for previous instance
-                current_track = db.session.query(Track).filter_by(
+                current_track = Track.query.filter_by(
                     title=tr["name"].lower()).one_or_none()
                 if current_track:
                     print("FOUND TRACK IN DATABASE")
                 else:
                     print("CREATING NEW TRACK")
-                    tr_genre, tr_artist = None, None
-                    # TODO refactor into more dynamic setters
+                    # TODO a way to document a track that may be missing some values, or just notify the user to find those out
+                    # TODO for a missing start/end time, there may be a math solution
+                    current_track = Track(
+                        title=tr["name"],
+                        bpm=tr["bpm"],
+                        key=MiscHelper.camelot_converter(tr["key"]),)
                     if tr.get("genre"):
-                        tr_genre = Genre.query.filter_by(
-                            name=tr["genre"]).one_or_none()
-                        if not tr_genre:
-                            tr_genre = Genre(name=tr["genre"])
-                            cls.commit_instances(tr_genre)
-                            tr.pop("genre")
-
+                        tr_genre = cls.dynamic_setters(Genre, tr.get("genre"))
+                        current_track.genre = tr_genre
                     # TODO currently will not separate artists in collabs/remixees
                     if tr.get("artist"):
-                        tr_artist = Artist.query.filter_by(
-                            name=tr["artist"]).one_or_none()
-                        if not tr_artist:
-                            tr_artist = Artist(name=tr["artist"])
-                            cls.commit_instances(tr_artist)
-                            tr.pop("artist")
-                    new_track = Track(
-                        title=tr["name"], bpm=tr["bpm"], key=MiscHelper.camelot_converter(tr["key"]))
-            set_trace()
-        except Exception as err:
-            set_trace()
+                        tr_artist = cls.dynamic_setters(
+                            Artist, tr.get('artist'))
+                        current_track.artists.append(tr_artist)
+                    cls.commit_instances(current_track)
 
-            # Needs to create/find play_track
+                    # create play_track connection
+
+                    current_play_track = PlayTrack(
+                        playlist=pl,
+                        track=current_track,
+                        start_time=tr.get("start_time"),
+                        end_time=tr.get("end_time"))
+                    cls.commit_instances(current_play_track)
+                    
+                if debug:
+                    print(current_track, current_track.genre,
+                          current_track.artists)
+                    # set_trace()
+        except Exception as err:
+            stars("WHYYYY")
+            stars(err)
+            MiscHelper.get_line_of_error()
 
         return
+
+    @classmethod
+    def dynamic_setters(cls, table, name):
+        found = table.query.filter_by(name=name).one_or_none()
+        if not found:
+            found = table(name=name)
+            cls.commit_instances(found)
+        return found
 
     @classmethod
     def separate_artists(cls, artists):
@@ -121,9 +137,17 @@ class MiscHelper():
         from datetime import timedelta
         return str(timedelta(seconds=seconds))
 
+    @classmethod
+    def get_line_of_error(cls):
+        import sys
+        import os
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(f'{exc_type} {exc_obj} => \'{fname} line {exc_tb.tb_lineno}\'')
+
     @staticmethod
     def camelot_dict():
-        camelot = {
+        return {
             # minor
             "1a": ("abm", "g#m"),
             "2a": ("ebm", "d#m"),
@@ -151,16 +175,15 @@ class MiscHelper():
             "11b": ("a", ),
             "12b": ("e", ),
         }
-        return camelot
 
     @classmethod
     def camelot_converter(cls, key):
         try:
-            if cls.camelot.get(key):
+            if cls.camelot_dict().get(key):
                 return key
             else:
                 found_key = [(cam, keys)
-                             for cam, keys in cls.camelot.items() if key in keys][0]
+                             for cam, keys in cls.camelot_dict().items() if key in keys][0]
                 return found_key[0]
         except KeyError:
             return None

@@ -15,8 +15,8 @@ with app.app_context():
     genres = Genre.query.all()
     remix_alias = RemixAlias.query.all()
     top_wrap("DEBUG MODE")
+    pp(tracks)
 
     set_trace()
-    
 
     center_string_stars("DONE")
