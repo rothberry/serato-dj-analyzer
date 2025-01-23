@@ -1,5 +1,5 @@
 from ipdb import set_trace
-from lib.models import Base, Playlist, Track, Artist, Genre, PlayTrack
+from lib.models import Genre, RemixAlias
 from py_term_helpers import star_line, center_string_stars, top_wrap
 from lib.helper import FlaskHelper, MiscHelper
 from lib.parser import TxtParser, CSVParser
@@ -24,13 +24,27 @@ if __name__ == "__main__":
         center_string_stars("Creating Tables..")
         db.create_all()
 
+        center_string_stars("Creating Test Genres...")
+        genres = ['trap', 'house', "drum and bass", "techno"]
+        test_genres = []
+        for g in genres:
+            test_genres.append(Genre(name=g))
+        FlaskHelper.commit_instances(test_genres)
+
+        center_string_stars("Creating Test Remixes...")
+        remix_alias = {"re", "remix", "edit", "flip", "redrum", "recrank"}
+        remixes = []
+        for remix in remix_alias:
+            remixes.append(RemixAlias(name=remix))
+        FlaskHelper.commit_instances(remixes)
+
         center_string_stars("SEEDING TEST FILES...")
 
         # parser creates a list of dicts for the set with title
         parser1 = CSVParser(playlist_name="parser1")
         parser1.create_setlist('sets/csv/1-20-2025.csv')
 
-        FlaskHelper.dynamic_create(parser1, True)
+        FlaskHelper.dynamic_create(parser1)
         # Close the session
         db.session.close()
         center_string_stars("DON!")

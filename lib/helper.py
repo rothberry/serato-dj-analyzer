@@ -28,28 +28,28 @@ class FlaskHelper():
         from lib.models import Playlist, Track, Artist, Genre, PlayTrack
         from app import db
 
-        try:
+        pl = Playlist(name=parser_dict.playlist_name)
+        cls.commit_instances(pl)
 
-            pl = Playlist(name=parser_dict.playlist_name)
-            cls.commit_instances(pl)
+        for tr in parser_dict.setlist:
+            # track: title, bpm, key, is_remix
+            #   title => has all lowercase, search in table
+            #   remix => search title for remix keywords
+            #   genre => as a finder func
+            # artist(s): name
+            #   separate individual artists
 
-            for tr in parser_dict.setlist:
-                # track: title, bpm, key, is_remix
-                #   title => has all lowercase, search in table
-                #   remix => search title for remix keywords
-                #   genre => as a finder func
-                # artist(s): name
-                #   separate individual artists
-
-                # Look through track table for previous instance
-                current_track = Track.query.filter_by(
-                    title=tr["name"].lower()).one_or_none()
-                if current_track:
-                    print("FOUND TRACK IN DATABASE")
-                else:
-                    print("CREATING NEW TRACK")
-                    # TODO a way to document a track that may be missing some values, or just notify the user to find those out
-                    # TODO for a missing start/end time, there may be a math solution
+            # Look through track table for previous instance
+            current_track = Track.query.filter_by(
+                title=tr["name"].lower()).one_or_none()
+            if current_track:
+                print("FOUND TRACK IN DATABASE")
+                print(current_track)
+            else:
+                print("CREATING NEW TRACK")
+                # TODO a way to document a track that may be missing some values, or just notify the user to find those out
+                # TODO for a missing start/end time, there may be a math solution
+                try:
                     current_track = Track(
                         title=tr["name"],
                         bpm=tr["bpm"],
@@ -63,24 +63,16 @@ class FlaskHelper():
                             Artist, tr.get('artist'))
                         current_track.artists.append(tr_artist)
                     cls.commit_instances(current_track)
+                except IndexError:
+                    MiscHelper.get_line_of_error()
+                # create play_track connection
 
-                    # create play_track connection
-
-                    current_play_track = PlayTrack(
-                        playlist=pl,
-                        track=current_track,
-                        start_time=tr.get("start_time"),
-                        end_time=tr.get("end_time"))
-                    cls.commit_instances(current_play_track)
-                    
-                if debug:
-                    print(current_track, current_track.genre,
-                          current_track.artists)
-                    # set_trace()
-        except Exception as err:
-            stars("WHYYYY")
-            stars(err)
-            MiscHelper.get_line_of_error()
+                current_play_track = PlayTrack(
+                    playlist=pl,
+                    track=current_track,
+                    start_time=tr.get("start_time"),
+                    end_time=tr.get("end_time"))
+                cls.commit_instances(current_play_track)
 
         return
 
@@ -143,7 +135,7 @@ class MiscHelper():
         import os
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(f'{exc_type} {exc_obj} => \'{fname} line {exc_tb.tb_lineno}\'')
+        stars(f'{exc_type} {exc_obj} => \'{fname} line {exc_tb.tb_lineno}\'', "x")
 
     @staticmethod
     def camelot_dict():

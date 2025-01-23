@@ -51,7 +51,7 @@ class CSVParser():
                     """ if k in ("playtime",) : row[k] = MiscHelper.convert_ts_to_seconds(row[k]) """
                     try:
                         if k in ("bpm", ):
-                            v = float(v)
+                            v = int(v)
                         elif k in ("start time", "end time"):
                             # TODO have start and end time as UTC
                             # ? will assume start and end times are all on the same day

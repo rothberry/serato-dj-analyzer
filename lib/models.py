@@ -48,7 +48,7 @@ class Track(Base):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
-    bpm = db.Column(db.Float)
+    bpm = db.Column(db.Integer)
     key = db.Column(db.String)
     is_remix = db.Column(db.Boolean, default=False)
     # TODO How to differ between remixer and og artist?
