@@ -20,6 +20,14 @@ class FlaskHelper():
             db.session.add(data)
         db.session.commit()
 
+    @classmethod
+    def parse_to_create(cls, filepath, playlist_name=None):
+        from lib.parser import CSVParser
+        # TODO will change the filepath split for a diff way to get the playlist name
+        parser = CSVParser(playlist_name=playlist_name or filepath.split("/")[-1].split(".")[0])
+        parser.create_setlist(filepath)
+        cls.dynamic_create(parser)
+
     # TODO move this into the Playlist Model?
 
     @classmethod

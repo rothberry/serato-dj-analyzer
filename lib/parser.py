@@ -43,6 +43,7 @@ class CSVParser():
                 # normalize row before appending
                 #   all lower
                 #   correct types
+                # TODO adapt this for both the .txt AND .csv iterations
                 track_data = dict()
                 for k in row:
                     v = row[k]
@@ -70,10 +71,9 @@ class CSVParser():
                             track_data[k] = v
                     except Exception as err:
                         stars((err, k, v))
-                        set_trace()
-                # set_trace()
+                        MiscHelper.get_line_of_error()
+
                 self.setlist.append(track_data)
-        # set_trace()
         stars(
             f'setlist {self.playlist_name} created with {len(self.setlist)} tracks')
         return
@@ -83,7 +83,7 @@ class TxtParser():
 
     def __init__(self, setlist=None, playlist_name=None, playlist_data=[]):
         self.setlist = setlist
-        self.playlist_data = playlist_data # TODO change to meta_data
+        self.playlist_data = playlist_data  # TODO change to meta_data
         self.playlist_name = playlist_name
         # self.source = ""
 
