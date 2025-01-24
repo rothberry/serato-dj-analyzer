@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from lib.helper import FlaskHelper, MiscHelper
 from ipdb import set_trace
+from py_term_helpers import top_wrap, center_string_stars as stars
 
 db = SQLAlchemy()
 # Define a base class for declarative models
@@ -103,15 +104,57 @@ class Playlist(Base):
     def track_count(self):
         return len(self.play_tracks)
 
+    def sql_setlist(self):
+        from sqlalchemy import text
+
+        # TODO raw sql instead of iteration?
+        queer = f'''
+                SELECT 
+                    tracks.title,
+                    tracks.key,
+                    tracks.bpm,
+                    genres.name,
+                    play_tracks.start_time,
+                    play_tracks.end_time
+                FROM playlists
+                    JOIN play_tracks ON playlists.id is play_tracks.playlist_id
+                    JOIN tracks ON tracks.id is play_tracks.track_id
+                    JOIN genres ON tracks.genre_id is genres.id
+                WHERE playlists.id is {self.id}
+                '''
+        """ 
+            can't do the second group join for tracks<>artists
+            * JOIN artist_track_association ON artist_track_association.track_id is tracks.id
+            * JOIN artists ON artist_track_association.artist_id is artists.id
+          """
+        sql = text(queer)
+        result = db.session.execute(sql)
+        res = [row for row in result]
+        # set_trace()
+
     def show_setlist(self):
         tracklist = []
         for pt in self.play_tracks:
-            tr = pt.track.__dict__
-            tr["artists"] = [art.name for art in pt.track.artists]
-            tr["genre"] = pt.track.genre.name
-            if tr["_sa_instance_state"]:
-                tr.pop("_sa_instance_state")
-            tracklist.append(tr)
+            try:
+
+                tr = {
+                    "title": pt.track.title,
+                    "bpm": pt.track.bpm,
+                    "key": pt.track.key,
+                    "start_time": pt.start_time,
+                    "end_time": pt.end_time,
+                }
+                # set_trace()
+                if len(pt.track.artists) > 0:
+                    tr["artists"] = [art.name for art in pt.track.artists]
+                if pt.track.genre:
+                    tr["genre"] = pt.track.genre.name
+                # print(tr, "?")
+                # set_trace()
+                tracklist.append(tr)
+            except AttributeError:
+                MiscHelper.get_line_of_error()
+        # print(tracklist)
         return tracklist
 
     def to_dict(self, rel=False):

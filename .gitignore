@@ -5,3 +5,4 @@
 NOTES.md
 .pytest_cache
 *__pycache__
+*.sql
