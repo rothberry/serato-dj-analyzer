@@ -12,6 +12,8 @@ flask-migrate = "*"
 flask-cors = "*"
 pytest = "*"
 py-term-helpers = "*"
+numpy = "*"
+matplotlib = "*"
 
 [dev-packages]
 
