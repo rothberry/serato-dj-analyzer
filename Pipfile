@@ -12,6 +12,7 @@ flask-migrate = "*"
 flask-cors = "*"
 pytest = "*"
 py-term-helpers = "*"
+pyqt6 = "*"
 
 [dev-packages]
 
