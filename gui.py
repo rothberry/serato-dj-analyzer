@@ -39,6 +39,8 @@ if __name__ == "__main__":
     with app.app_context():
         gui = QApplication(sys.argv)
 
+
+
         window = MainWindow()
         window.show()
         # Start the event loop.
