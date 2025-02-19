@@ -28,3 +28,9 @@ downgrade:
 migrate: 
 	flask db migrate -m "${m}"
 	# flask --app=lib/app.py db migrate -m "${m}"
+
+gui:
+	python gui.py
+
+ui:
+	pyuic6 upload-gui.ui -o output.py 

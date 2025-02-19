@@ -6,20 +6,29 @@ from lib.helper import FlaskHelper
 import sys
 import os
 from app import create_app
+from output import Ui_MainWindow
 
 
-class MainWindow(QMainWindow):
+# class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         super().__init__()
-        btn = QPushButton(self)
-        btn.setText("Open file dialog")
-        self.setCentralWidget(btn)
-        btn.clicked.connect(self.open_dialog)
+        self.setupUi(self)
 
-        self.label = QLabel()
+        self.uploadBtn = self.findChild(QPushButton, "uploadBtn")
+        print(self.uploadBtn.objectName())
+        self.uploadBtn.clicked.connect(self.on_click)
+
+        upB = self.findChild(QPushButton, "uploadBtn_2")
+        print(upB.objectName())
+        upB.clicked.connect(self.on_click)
+
 
     @pyqtSlot()
+    def on_click(self):
+        print("KAHGSFGHKASFDHGKADFSHGKDAFGHK")
+
     def open_dialog(self):
         fname = QFileDialog.getOpenFileName(
             self,
@@ -33,15 +42,12 @@ class MainWindow(QMainWindow):
         print(fname)
 
 
-if __name__ == "__main__":
-
+if __name__ == '__main__':
     app = create_app()
     with app.app_context():
         gui = QApplication(sys.argv)
-
-
-
         window = MainWindow()
+        ui = Ui_MainWindow()
+        ui.setupUi(window)
         window.show()
-        # Start the event loop.
         gui.exec()
