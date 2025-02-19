@@ -29,8 +29,8 @@ migrate:
 	flask db migrate -m "${m}"
 	# flask --app=lib/app.py db migrate -m "${m}"
 
-gui:
-	python gui.py
+run:
+	python run.py
 
 ui:
-	pyuic6 upload-gui.ui -o output.py 
+	pyuic6 gui/upload-gui.ui -o gui/template.py 

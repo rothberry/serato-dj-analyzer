@@ -6,7 +6,7 @@ from lib.helper import FlaskHelper
 import sys
 import os
 from app import create_app
-from output import Ui_MainWindow
+from gui.template import Ui_MainWindow
 
 
 # class MainWindow(QMainWindow):
