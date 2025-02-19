@@ -51,8 +51,6 @@ class Ui_MainWindow(object):
         self.actionDrop_Setlist.setObjectName("actionDrop_Setlist")
         self.menuBar.addAction(self.menuSerato_DJ_Analyzer.menuAction())
 
-        self.uploadBtn.clicked.connect(self.on_click)
-
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -63,7 +61,3 @@ class Ui_MainWindow(object):
         self.uploadBtn_2.setText(_translate("MainWindow", "TESTS2"))
         self.menuSerato_DJ_Analyzer.setTitle(_translate("MainWindow", "Serato DJ Analyzer"))
         self.actionDrop_Setlist.setText(_translate("MainWindow", "Drop Setlist"))
-
-    
-    def on_click(self):
-        print("KAHGSFGHKASFDHGKADFSHGKDAFGHK")

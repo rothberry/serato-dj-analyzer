@@ -20,12 +20,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print(self.uploadBtn.objectName())
         self.uploadBtn.clicked.connect(self.on_click)
 
-        upB = self.findChild(QPushButton, "uploadBtn_2")
-        print(upB.objectName())
-        upB.clicked.connect(self.on_click)
-
-
-    @pyqtSlot()
     def on_click(self):
         print("KAHGSFGHKASFDHGKADFSHGKDAFGHK")
 
@@ -47,7 +41,5 @@ if __name__ == '__main__':
     with app.app_context():
         gui = QApplication(sys.argv)
         window = MainWindow()
-        ui = Ui_MainWindow()
-        ui.setupUi(window)
         window.show()
         gui.exec()
