@@ -81,8 +81,8 @@ class FlaskHelper():
                     start_time=tr.get("start_time"),
                     end_time=tr.get("end_time"))
                 cls.commit_instances(current_play_track)
-
-        return
+        set_trace()
+        return pl
 
     @classmethod
     def dynamic_setters(cls, table, name):

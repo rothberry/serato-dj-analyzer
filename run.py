@@ -16,12 +16,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
 
+        # Find stuff from template
         self.uploadBtn = self.findChild(QPushButton, "uploadBtn")
-        print(self.uploadBtn.objectName())
-        self.uploadBtn.clicked.connect(self.on_click)
+        self.uploadBtn.clicked.connect(self.open_dialog)
 
-    def on_click(self):
-        print("KAHGSFGHKASFDHGKADFSHGKDAFGHK")
+        self.playlistName = self.findChild(QTextBrowser, "playlistName")
 
     def open_dialog(self):
         fname = QFileDialog.getOpenFileName(
@@ -30,9 +29,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "${HOME}",
             "CSV (*.csv);; Txt (*.txt)",
         )
-        FlaskHelper.parse_to_create(fname[0])
+        playlist = FlaskHelper.parse_to_create(fname[0])
         set_trace()
-        self.label.setText(fname)
+        self.playlistName.setText(fname[0])
         print(fname)
 
 
